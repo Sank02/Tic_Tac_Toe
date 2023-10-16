@@ -1,81 +1,168 @@
 
 
-arr = [["","", ""], ["","", ""], ["","", ""] ]
+arr = [["", "", ""], ["", "", ""], ["", "", ""]]
+chessBoardSize = 3  # 3x3
 user = True
+userSymbol = "X" if user else "O"
+
+noOfMoves = 0
 
 
 def game():
+
+    while (True):
+        result = playMove()
+
+        if (result):
+            if (result == True):
+                print(userSymbol, "won the game")
+            else:
+                print(result)
+            break
+
+
+def playMove():
     global user
-    
-    row = int(input("Enter row: "))
-    col = int(input("Enter col: "))
+    global noOfMoves
 
-    while(arr[row][col] == " "): 
-        row = input("Enter row: ")
-        col = input("Enter col: ")
+    try:
+        print("\n---------------", noOfMoves)
+        row = int(input("Enter row: "))
+        col = int(input("Enter col: "))
 
+        if (arr[row][col] == ""):
+            userSymbol = "X" if user else "O"
+            arr[row][col] = userSymbol
+            noOfMoves += 1
+            printChessBoard()
+            user = not user
 
-    userSym = "X" if user else "O"
-    arr[row][col] = userSym
+            return isCheckMate(row, col)
 
-    user = not user 
+        else:
+            print("This space is already filled. Please choose some other location.")
 
-    res = isRow(userSym, arr, row, col)
-
-    if(res == "Lose"): 
-       res = isCol(userSym, arr, row, col)
-
-    if(res == "Lose"): 
-       res = isDiag(userSym, arr, row, col)
-
-    if(res == "Lose"): 
-       res = isDiagReverse(userSym, arr, row, col)
-
-    print(arr)
-    print("You " + res)
-    
-   
-def isRow(user, arr, row, col):
-
-    for i in range(3):
-        if(arr[row][i] != user):
-            return "Lose"
-
-    return "Win"
+    except:
+        print("Error Non numeric values not allowed. Only integers accepted.")
 
 
-   
-def isCol(user, arr, row, col):
-
-    for i in range(3):
-        if(arr[i][col] != user):
-            return "Lose"
-
-    return "Win"
-
-def isDiag(user, arr, row, col):
-
-    for i in range(3):
-        if(arr[i][i] != user):
-            return "Lose"
+def printChessBoard():
+    print(arr[0])
+    print(arr[1])
+    print(arr[2])
 
 
-    return "Win"
+def isCheckMate(row, col):
+    res = isRow(userSymbol, arr, row, col)
 
-def isDiagReverse(user, arr, row, col):
-    print("reverse entered")
-    for i in range(3):
-        print(f"Checking cell {2-i}, {2-i}")
-        print(f"Cell value: {arr[2-i][2-i]}")
-        if arr[2-i][2-i] != user:
-            return "Lose"
+    if (res != True):
+        res = isCol(userSymbol, arr, row, col)
 
-    return "Win"
+    if (res != True & row == col):
+        res = isDiag(userSymbol, arr)
 
-# // draW
+    if (res != True & row == col):
+        res = isDiagReverse(userSymbol, arr)
+
+    if (res != True):
+        gameOver = isMatchDrawn()
+        if (gameOver):
+            return "Match is drawn..."
+
+    return res
+
+
+def isMatchDrawn():
+    if (noOfMoves > 7):
+        return True
+    else:
+        return False
+
+
+def isRow(userSymbol, arr, row, col):
+
+    obj = {
+        "X": 0,
+        "O": 0
+    }
+
+    for i in range(chessBoardSize):
+        if (arr[row][i] == "X"):
+            obj["X"] += 1
+        elif (arr[row][i] == "O"):
+            obj["O"] += 1
+
+    if (obj["X"] == chessBoardSize | obj["O"] == chessBoardSize):
+        return True
+    elif (obj["X"] + obj["O"] == chessBoardSize):
+        return "Lose"
+    else:
+        return False
+
+
+def isCol(userSymbol, arr, row, col):
+
+    obj = {
+        "X": 0,
+        "O": 0
+    }
+
+    for i in range(chessBoardSize):
+        if (arr[i][col] == "X"):
+            obj["X"] += 1
+        elif (arr[i][col] == "O"):
+            obj["O"] += 1
+
+    if (obj["X"] == chessBoardSize | obj["O"] == chessBoardSize):
+        return True
+    elif (obj["X"] + obj["O"] == chessBoardSize):
+        return "Lose"
+    else:
+        return False
+
+
+def isDiag(userSymbol, arr):
+
+    obj = {
+        "X": 0,
+        "O": 0
+    }
+
+    for i in range(chessBoardSize):
+        if (arr[i][i] == "X"):
+            obj["X"] += 1
+        elif (arr[i][i] == "O"):
+            obj["O"] += 1
+
+    if (obj["X"] == chessBoardSize | obj["O"] == chessBoardSize):
+        return True
+    elif (obj["X"] + obj["O"] == chessBoardSize):
+        return "Lose"
+    else:
+        return False
+
+
+def isDiagReverse(userSymbol, arr):
+
+    obj = {
+        "X": 0,
+        "O": 0
+    }
+
+    for i in range(chessBoardSize):
+
+        if (arr[2-i][2-i] == "X"):
+            obj["X"] += 1
+        elif (arr[2-i][2-i] == "O"):
+            obj["O"] += 1
+
+    if (obj["X"] == chessBoardSize | obj["O"] == chessBoardSize):
+        return True
+    elif (obj["X"] + obj["O"] == chessBoardSize):
+        return "Lose"
+    else:
+        return False
+
+
 # // FOR EVERT INPOUT YOU ARE CHECKIGNG RESULT
-
-    
-
-while(True):
-    game()
+game()
